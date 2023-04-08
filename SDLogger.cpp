@@ -1,4 +1,4 @@
-#include "SDLogger.h"
+#include "SDLogger.hpp"
 
 /**
  * Constructor to set the file name

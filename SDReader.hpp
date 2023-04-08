@@ -1,6 +1,6 @@
 #include <SD.h>
-#include "../../include/SDCard.h"
-#include "SDLogger.h"
+#include "../../include/SDCard.hpp"
+#include "SDLogger.hpp"
 
 #include <vector>
 
