@@ -24,12 +24,30 @@ bool SDLogger::initialize_sd_card(){
     const auto ok = sd.begin(TT_CLK, TT_MISO, TT_MOSI, TT_SS, &SPI);
 
     if(!ok){
-        throw -1;
         Serial.println("ERROR initializing sd card");
         return false;
     }
 
     return true;
+}
+
+/**
+ * Set the filename to write to the easiest way possible
+ */
+void SDLogger::set_filename(std::string fn){
+    this->filename = fn;
+}
+
+/**
+ * Slightly more involved but potentially more useful filename
+ *  creation
+ */
+void SDLogger::set_filename(std::string prefix, int month, int day, int year, std::string filetype){
+    this->filename = prefix + 
+        "_" + std::to_string(month) + 
+        "-" + std::to_string(day) +
+        "-" + std::to_string(year) + 
+        filetype;
 }
 
 /**

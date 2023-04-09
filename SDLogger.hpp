@@ -1,3 +1,6 @@
+#ifndef SDLOGGER_H
+#define SDLOGGER_H
+
 #include <SD.h>
 #include "../../include/SDCard.hpp"
 
@@ -27,18 +30,19 @@ class SDLogger {
 
         SDCard sd;
 
-        bool initialize_sd_card();
 
     public:
 
-        SDLogger(){
-            filename = "/logfile" + filetype;
-
-            this->initialize_sd_card();
-        };
+        SDLogger(){};
 
         SDLogger(std::string filename);
         SDLogger(std::string prefix, int month, int day, int year, std::string filetype);
+
+        // must be called before logging
+        bool initialize_sd_card();
+
+        void set_filename(std::string);
+        void set_filename(std::string prefix, int month, int day, int year, std::string filetype);
 
         void write_header(std::vector<std::string> fields);
 
@@ -55,4 +59,4 @@ class SDLogger {
 
 }; 
 
-
+#endif
