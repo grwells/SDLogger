@@ -139,5 +139,5 @@ void SDLogger::write_header(std::vector<std::string> fields){
         header += i + separator;
     }
 
-    this->append_line(header);
+    this->write_line(header);
 }
