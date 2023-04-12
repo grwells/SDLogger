@@ -21,13 +21,14 @@ SDLogger::SDLogger(std::string prefix, int month, int day, int year, std::string
 
 bool SDLogger::initialize_sd_card(){
 
-    const auto ok = sd.begin(TT_CLK, TT_MISO, TT_MOSI, TT_SS, &SPI);
+    const auto ok = this->sd.begin(TT_CLK, TT_MISO, TT_MOSI, TT_SS, &SPI);
 
     if(!ok){
-        Serial.println("ERROR initializing sd card");
+        Serial.println("[ERROR] failed to initialize sd card");
         return false;
     }
-
+    
+    Serial.println("[DEBUG] success initializing sd card");
     return true;
 }
 
@@ -56,9 +57,11 @@ void SDLogger::set_filename(std::string prefix, int month, int day, int year, st
  */
 File SDLogger::open_file(const char* mode){
     try{
-        return sd.open(filename.c_str(), mode);
+        Serial.printf("\t-> trying to open file \'%s\' in mode -> %s\n", this->filename.c_str(), mode);
+        return this->sd.open(this->filename.c_str(), mode);
 
     }catch(const std::exception& e){
+        Serial.println("print error in open");
         Serial.println(e.what());
      
     }catch(...){
@@ -70,7 +73,7 @@ File SDLogger::open_file(const char* mode){
 /**
  * Close the SD card connection/file 
  */
-void SDLogger::close_file(){
+void SDLogger::close_card(){
     this->sd.end();
 }
 
@@ -85,6 +88,7 @@ void SDLogger::write_line(std::string line){
 
     const char* buf = line.c_str();
     f.write((uint8_t*)buf, line.length());
+    f.close();
 }
 
 /**
@@ -98,6 +102,7 @@ void SDLogger::append_line(std::string line){
 
     const char* buf = line.c_str();
     f.write((uint8_t*)buf, line.length());
+    f.close();
 }
 
 

@@ -55,7 +55,9 @@ class SDLogger {
         void read();
 
         File open_file(const char* mode = FILE_WRITE);
-        void close_file();
+        bool exists(std::string fn){return this->sd.exists(fn.c_str());}
+        bool exists(){return this->sd.exists(this->filename.c_str());}
+        void close_card();
 
 }; 
 
