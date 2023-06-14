@@ -22,7 +22,7 @@ class SDReader {
 
         bool initialize_sd_card();
 
-        File* fp = NULL;
+        File fp;
 
     public:
 
@@ -40,9 +40,9 @@ class SDReader {
                 std::string filetype){
 
             this->filename = prefix + "_" + 
-                month + "-" + 
-                day + "-" + 
-                year + "." + filetype;
+                to_string(month) + "-" + 
+                to_string(day) + "-" + 
+                to_string(year) + "." + filetype;
 
             initialize_sd_card();
         }
@@ -57,19 +57,17 @@ class SDReader {
 
         File* open_file(){
             if(filename == "") return NULL;
-
-            this->fp = fopen(this->filename, "r");
-            return this->fp;
+            this->fp = (sd.open(this->filename.c_str(), "r"));
+            return &(this->fp);
         }
 
         File* open_file(string filename){
-            this->fp = fopen(filename, "r");
-            return this->fp;
+            this->fp = sd.open(filename.c_str(), "r");
+            return &(this->fp);
         }
 
         void close_file(){
-            fclose(this->fp);
-            this->fp = NULL;
+            this->fp.close();
         }
 
 };
