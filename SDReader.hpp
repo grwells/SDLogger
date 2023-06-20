@@ -1,4 +1,3 @@
-#include <esp_heap_trace.h>
 #include <SD.h>
 #include <vector>
 #include <string>
@@ -27,7 +26,7 @@ class SDReader {
         std::string filename = "";
         std::string separator = ";";
 
-        SDCard sd;
+        SDCard sd; // default sd interface passed to constructor
 
         bool initialize_sd_card();
 
@@ -46,13 +45,16 @@ class SDReader {
 
     public:
 
+        // initialize sd card connection and nothing more
         SDReader(){initialize_sd_card();}
 
+        // initialize sd card and set default file to open
         SDReader(std::string filename){
             this->filename = filename;
             initialize_sd_card();
         }
 
+        // initialize and set the file name structure
         SDReader(std::string prefix, 
                 int month, 
                 int day, 
@@ -67,10 +69,14 @@ class SDReader {
             initialize_sd_card();
         }
 
+        // manually set the filename to access
         void set_filename(string filename){this->filename = filename;}
 
+        // read one line as a string from the file
         std::string read_line();
 
+        // retrieve all data within the specified time 
+        //  range, potentially accessing mult. files
         void read_entry_range_from_files(TimeStamp epoch, 
                 TimeStamp terminus, 
                 vector<string> topic_filter, 
@@ -78,12 +84,15 @@ class SDReader {
                 string prefix="log", 
                 string filetype="csv");
 
+        // access a single file to retrieve data in time range and 
+        //  publish via MQTT
         void read_entry_range(File f, 
                 TimeStamp epoch, 
                 TimeStamp terminus, 
                 vector<string> topic_filter,
                 int page_length);
 
+        // open the specified file and get the file pointer
         File* open_file(){
             if(filename == "") return NULL;
             this->fp = (sd.open(this->filename.c_str(), "r"));
@@ -91,12 +100,14 @@ class SDReader {
             return &(this->fp);
         }
 
+        // open the specified file from path provided
         File* open_file(string filename){
             this->fp = sd.open(filename.c_str(), "r");
             this->file_open = true;
             return &(this->fp);
         }
 
+        // close the open file
         void close_file(){
             this->file_open = false;
             this->fp.close();

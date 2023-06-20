@@ -1,5 +1,7 @@
 #include "SDReader.hpp"
 
+// debug helper function not scoped to SDReader class
+// prints the current amount of free memory on the heap
 void print_heap_debug(){
     if(USB_DEBUG){
         Serial.print("[DEBUG] memory usage is ");
@@ -23,6 +25,12 @@ bool SDReader::topic_filter_match(vector<string> filter, string target){
     return false;
 }
 
+/*
+ * Compile collected data into a JSON "page"
+ *  which can then be published via the MQTT interface.
+ *
+ * Returns a single line JSON formatted string.
+ */
 string SDReader::build_json_page(
         string filename,
         long int epoch,
