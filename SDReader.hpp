@@ -7,6 +7,9 @@
 #include "TimeStamp.hpp"
 #include "MQTTMailer.hpp"
 
+#ifndef SDREADER_HPP
+#define SDREADER_HPP
+
 
 using namespace std;
 
@@ -115,3 +118,4 @@ class SDReader {
 
 };
 
+#endif

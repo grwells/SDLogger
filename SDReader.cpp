@@ -209,7 +209,7 @@ void SDReader::read_entry_range(
             TimeStamp terminus(data.back().substr(0, data.back().find(this->separator)));
             string json_page = this->build_json_page(this->filename, epoch.get_epoch(), terminus.get_epoch(), data);
 
-            mqtt_inst.mailMessage(&mqtt_client, "todo/topic/here", json_page, false);
+            mqtt_inst.mailMessage(&mqtt_client, string("datagator/data/time_range/") + WiFi.macAddress().c_str(), json_page, false);
 
             // clear log buffer
             //this->calculate_page_size(data);
