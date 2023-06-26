@@ -28,7 +28,10 @@ bool SDLogger::initialize_sd_card(){
         return false;
     }
     
-    Serial.println("[DEBUG] success initializing sd card");
+    Serial.println("[DEBUG] success initializing sd card logger");
+    Serial.print("[DEBUG] bytes free =  ");
+    double perc = ESP.getFreeHeap();
+    Serial.println(perc);
     return true;
 }
 
