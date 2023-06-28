@@ -16,10 +16,16 @@ void print_heap_debug(){
  *  return true if one of them does or filter is "", else return false
  */
 bool SDReader::topic_filter_match(vector<string> filter, string target){
+    bool check_default = (filter.size() == 1);
+    string def = "";
 
     for(string f : filter){
-        if(f == "") return true; 
-        else if(target.find(f) != string::npos) return true;
+        if(check_default && f == def){
+            return true;
+
+        }else if(f != def && target.find(f) != string::npos){
+            return true;
+        }
     }
     
     return false;
