@@ -1,7 +1,11 @@
+/**
+ * @file SDReader.cpp
+ */
 #include "SDReader.hpp"
 
-// debug helper function not scoped to SDReader class
-// prints the current amount of free memory on the heap
+/**
+ * Debug helper function not scoped to SDReader class, prints the current amount of free memory on the heap
+ */
 void print_heap_debug(){
     if(USB_DEBUG){
         Serial.print("[DEBUG] memory usage is ");
@@ -11,9 +15,14 @@ void print_heap_debug(){
     }
 }
 
-/*
- * Check if any of the filters match the target string
- *  return true if one of them does or filter is "", else return false
+/**
+ * @brief Check if any of the filters match the target string
+ *  return true if one of them does or filter is "", else return false.
+ *
+ * @param[in] filter
+ * @param[in] target
+ *
+ * @returns `true` if match found, `false` otherwise.
  */
 bool SDReader::topic_filter_match(vector<string> filter, string target){
     bool check_default = (filter.size() == 1);
@@ -31,11 +40,16 @@ bool SDReader::topic_filter_match(vector<string> filter, string target){
     return false;
 }
 
-/*
- * Compile collected data into a JSON "page"
+/**
+ * @brief Compile collected data into a JSON "page"
  *  which can then be published via the MQTT interface.
  *
- * Returns a single line JSON formatted string.
+ * @param[in] filename The name of the file this page came from.
+ * @param[in] epoch The beginning timestamp of the range this data was collected from.
+ * @param[in] terminus The end timestamp of the range this data was collected from.
+ * @param[in] data The vector of data entries collected in this page.
+ *
+ * @returns A single JSON object string which contains fields: `file name`, `epoch`, `terminus`, and `data`.
  */
 string SDReader::build_json_page(
         string filename,
@@ -59,8 +73,15 @@ string SDReader::build_json_page(
 
 
 
-/*
- * Calculate the size, in bytes, of the current page.
+/**
+ * @brief Calculate the size, in bytes, of the current page.
+ *
+ * If debugging is enabled over serial port, then the page size is printed to the 
+ * serial port.
+ *
+ * @param[in] page Reference to the "page" of collected results.
+ *
+ * @returns An integer (bytes) representing the size of the page.
  */
 int SDReader::calculate_page_size(vector<string> &page){
     int size = 0;
@@ -85,8 +106,10 @@ int SDReader::calculate_page_size(vector<string> &page){
     return size;
 }
 
-/*
- * Initialize connection to SD card and return false if no connection established.
+/**
+ * @brief Initialize connection to SD card and return false if no connection established.
+ *
+ * @returns A boolean value: `true` if initialization successful, `false` otherwise.
  */
 bool SDReader::initialize_sd_card(){
 
@@ -104,9 +127,8 @@ bool SDReader::initialize_sd_card(){
     return true;
 }
 
-/*
- * Read until next newline character into buffer and return as a 
- *  string
+/**
+ * @returns The next line from the file as a string.
  */
 string SDReader::read_line(){
     if(!this->file_open) return "";
@@ -125,9 +147,22 @@ string SDReader::read_line(){
     return buf;
 }
 
-/*
- * Collect all log entries within date range and not screened
- *  by the topic filter
+/**
+ * Collect all log entries within date range included by the topic filter. This 
+ * search is conducted on all files in the SD card file system. Once a file is found
+ * which meets the criteria of time range, prefix, and filetype, `read_entry_range()`
+ * is used to parse the file's entries for ones that match time range and topic filter
+ * untill the end of the file has been reached. Entries are uploaded to MQTT broker in pages
+ * which are limited in length by `page_length`.
+ *
+ * This process is repeated until all files in the file system have been checked.
+ *
+ * @param[in] epoch The beginning of the time range to collect data from. 
+ * @param[in] terminus The end of the time range to collect data from.
+ * @param[in] topic_filter The vector of topics to collect in a page.
+ * @param[in] page_length The maximum length of the page to construct.
+ * @param[in] prefix Only collect data from files whose prefix matches, for example only collect from `log` files.
+ * @param[in] filetype Match file type, this defaults to `csv`.
  */
 void SDReader::read_entry_range_from_files(TimeStamp epoch, 
             TimeStamp terminus, 
@@ -171,8 +206,20 @@ void SDReader::read_entry_range_from_files(TimeStamp epoch,
     */
 }
 
-/*
- * Collect all log entries in a file not screened by time range or topic filter
+/**
+ * Collect all log entries in a file that fall within the time range and match 
+ * a topic in topic filter. Collected entries are counted as entries in a "page". Entries are added
+ * to the "page" until `page_length` is reached. At this point the entries are uploaded 
+ * via MQTT to the broker.
+ *
+ * This process is repeated until the end of the file is reached or the entries no longer
+ * fall within the time range.
+ *
+ * @param[in] f File object to read from.
+ * @param[in] epoch The beginning of the time range to collect entries from.
+ * @param[in] terminus The end of the time range to collect entries from.
+ * @param[in] topic_filter A vector list of topic strings, which if matching, should be collected.
+ * @param[in] page_length The maximum number of results to include in this page.
  */
 void SDReader::read_entry_range(
         File f, 

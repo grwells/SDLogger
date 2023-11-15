@@ -1,3 +1,9 @@
+/**
+ * @file SDReader.hpp
+ * @brief Defines the utility class SDReader which is used to  read from SD card files.
+ * @author Garrett Wells
+ * @date 2023
+ */
 #include <SD.h>
 #include <vector>
 #include <string>
@@ -19,7 +25,7 @@ extern PubSubClient mqtt_client;
 extern const bool USB_DEBUG;
 
 /**
- * SDReader provides an interface for opening and
+ * @brief SDReader provides an interface for opening and
  *  reading data from files created using the SDLogger library.
  */
 class SDReader {
@@ -48,16 +54,30 @@ class SDReader {
 
     public:
 
-        // initialize sd card connection and nothing more
+        /**
+         * @brief Constructor initializes SD card connection and nothing more.
+         */
         SDReader(){initialize_sd_card();}
 
-        // initialize sd card and set default file to open
+        /**
+         * @brief Constructor initializes SD card and set default file to open.
+         *
+         * @param[in] filename The default file to open and read data from.
+         */
         SDReader(std::string filename){
             this->filename = filename;
             initialize_sd_card();
         }
 
-        // initialize and set the file name structure
+        /** 
+         * @brief Constructor initializes and sets the file name structure.
+         *
+         * @param[in] prefix What is this file for? Example: `log`.
+         * @param[in] month What month did this file start collecting data in?
+         * @param[in] day The day starting at?
+         * @param[in] year What year is it?
+         * @param[in] filetype What filetype/extension is this?
+         */
         SDReader(std::string prefix, 
                 int month, 
                 int day, 
@@ -72,14 +92,22 @@ class SDReader {
             initialize_sd_card();
         }
 
-        // manually set the filename to access
+        /**
+         * @brief Manually set the filename to access.
+         *
+         * @param[in] filename The name of the file to open. Should be a path if not in the root directory.
+         */
         void set_filename(string filename){this->filename = filename;}
 
-        // read one line as a string from the file
+        /**
+         * @brief Read until next newline character into buffer and return as a 
+         *  string.
+         */
         std::string read_line();
 
-        // retrieve all data within the specified time 
-        //  range, potentially accessing mult. files
+        /**
+         * @brief Retrieve all data within the specified time range, potentially accessing multiple files.
+         */
         void read_entry_range_from_files(TimeStamp epoch, 
                 TimeStamp terminus, 
                 vector<string> topic_filter, 
@@ -87,15 +115,18 @@ class SDReader {
                 string prefix="log", 
                 string filetype="csv");
 
-        // access a single file to retrieve data in time range and 
-        //  publish via MQTT
+        /**
+         * @brief Access a single file to retrieve data in time range and publish via MQTT.
+         */
         void read_entry_range(File f, 
                 TimeStamp epoch, 
                 TimeStamp terminus, 
                 vector<string> topic_filter,
                 int page_length);
 
-        // open the specified file and get the file pointer
+        /**
+         * @brief Open the specified file and get the file pointer.
+         */
         File* open_file(){
             if(filename == "") return NULL;
             this->fp = (sd.open(this->filename.c_str(), "r"));
@@ -103,14 +134,18 @@ class SDReader {
             return &(this->fp);
         }
 
-        // open the specified file from path provided
+        /**
+         * @brief Open the specified file from path provided.
+         */
         File* open_file(string filename){
             this->fp = sd.open(filename.c_str(), "r");
             this->file_open = true;
             return &(this->fp);
         }
 
-        // close the open file
+        /**
+         * @brief Close the open file.
+         */
         void close_file(){
             this->file_open = false;
             this->fp.close();

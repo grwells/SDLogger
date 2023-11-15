@@ -1,4 +1,4 @@
-# SDLogger Library Documentation
+# SDLogger Library 
 This library provides a useful interface for saving and retrieving time stamped data from an SD card using the Arduino platform. This code was originally developed and tested for an ESP32 micro-controller.
 
 
